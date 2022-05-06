@@ -1,0 +1,10 @@
+<특정 branch 만 가져오기>
+	git branch -d CHA 		// CHA 브랜치 삭제
+	git checkout -t origin/CHA 	// CHA 브랜치 가져옴
+	git pull			// 세팅해놓으면 바로 pull 할 수 있음
+
+<특정 branch A-C-P>
+	git add .
+	git commit -m "Add"
+	git push origin CHA 
+
