@@ -1,0 +1,35 @@
+[clone 하는 법]
+1.vs code 왼쪽 나뭇가지 누르고 clone
+2.CAMELRaisimLib.py에
+    binPath = 'C:/Users/user/raisimLib/install/bin'
+    licensePath = "C:/Users/user/.raisim/raisim.activation"
+    추가하기
+
+
+[brach 관련]
+1. branch 확인 : git branch
+2. branch 이동 : git checkout 이동할branch
+
+[add commit push]
+1. add : git add .
+2. commit : git commit -m "Verb(-ing) + Objective" Ex. initialize hwayoung branch
+3. push : git push -u origin hwayoung
+
+[원격 저장소의 최신 commit 받기]
+(주의! : 현재 local의 변경 사항 무시)
+1. git reset --hard HEAD	: 최근 commit으로 코드 돌리기
+2. git pull				    : 이 상태에서 pull
+
+[pull request 하기 전]
+1. cache파일 없앤다.
+2. CAMELRaisimLib.py에
+    binPath = 'C:/Users/user/raisimLib/install/bin'
+    licensePath = "C:/Users/user/.raisim/raisim.activation"
+    삭제하기 (15,16번째 줄)
+
+[pull request 한 후]
+1. repository를 받아온 후(최신 commit 받기)
+2. CAMELRaisimLib.py에
+    binPath = 'C:/Users/user/raisimLib/install/bin'
+    licensePath = "C:/Users/user/.raisim/raisim.activation"
+    추가하기
