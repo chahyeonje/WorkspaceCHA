@@ -1,8 +1,9 @@
+import pathOS
 import math
 import os
 import numpy as np
 import sys
-sys.path.append('C:/Users/camelcha/raisimLib/install/bin') # path to the raisimpy
+sys.path.append(pathOS.pathos) # path to the raisimpy
 import raisimpy as raisim
 import time
 raisim.World.setLicenseFile(os.path.dirname(os.path.abspath(__file__)) + "/../../rsc/activation.raisim")

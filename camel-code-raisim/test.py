@@ -5,7 +5,6 @@ import os
 #from typing_extensions import Self
 import numpy as np
 import sys
-
 sys.path.append('C:/Users/camelcha/raisimLib/install/bin') # path to the raisimpy
 import raisimpy as raisim
 import time

@@ -1,3 +1,4 @@
+import pathOS
 import math
 import os
 #from this import d
@@ -5,7 +6,7 @@ import os
 #from typing_extensions import Self
 import numpy as np
 import sys
-sys.path.append('C:/Users/camelcha/raisimLib/install/bin') # path to the raisimpy
+sys.path.append(pathOS.pathos) # path to the raisimpy
 import raisimpy as raisim
 import time
 from CAMELTrajectoryGenerator import ThirdOrderPolynomialTrajectory1D
