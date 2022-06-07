@@ -117,4 +117,4 @@ class Sinusoidal:
 
     def getAccelerationTrajectory(self, currentTime):
         normalizedTime = (currentTime - self.referenceTime) / self.timeDuration
-        return (6 * self.coefficient[0] * normalizedTime + 2 * self.coefficient[1]) / (self.timeDuration**2)
+        return 0.04*math.cos(0.2*math.pi*normalizedTime)
