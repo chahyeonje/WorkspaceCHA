@@ -26,7 +26,7 @@ server = raisim.RaisimServer(world)
 ground = world.addGround()
 
 # load robot.urdf file
-planarElbow_urdf_file = os.path.dirname(os.path.abspath(__file__)) + "/rsc/test_planar_elbow_2dof.urdf"
+planarElbow_urdf_file = os.path.dirname(os.path.abspath(__file__)) + "/rsc/test_planar_elbow_2dof_point_mass.urdf"
 planarElbow = world.addArticulatedSystem(planarElbow_urdf_file)   # robot class
 
 planarElbow.setName("planarElbow")
@@ -40,10 +40,7 @@ m1=0.193
 m2=0.073
 l1=0.1492
 l2=0.381
-I1=0.0015
-I2=0.0001949
-lc1=0.1032
-lc2=0.084
+#
 
 q1=planarElbow.getGeneralizedCoordinate()[0]
 q2=planarElbow.getGeneralizedCoordinate()[1]
@@ -51,7 +48,7 @@ dq1=planarElbow.getGeneralizedVelocity()[0]
 dq2=planarElbow.getGeneralizedVelocity()[1]
 
 massMat = np.ones((2,2))
-massMat[0,0] = m1*lc1**2 + m2*(l1**2+l2**2+2*l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
+massMat[0,0] = m1*l1**2 + m2*(l1**2+l2**2+2*l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
 massMat[0,1] = m2*(l2**2+l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
 massMat[1,0] = m2*(l2**2+l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
 massMat[1,1] = m2*l2**2
@@ -79,7 +76,7 @@ residualVector = np.zeros(2)
 desiredMomenta = np.zeros(2)
 currentMomenta = np.zeros(2)
 magnitudeResidualVector = np.linalg.norm(residualVector)
-diag_K = np.array([[50,0],[0,37]])
+diag_K = np.array([[47,0],[0,36.5]])
 T_collsion = np.zeros(2)
 s_collsion = 0
 colMassMat = np.zeros((2,2))
@@ -112,7 +109,7 @@ while(True):
       desiredVelocity = -desiredVelocity
       desiredAcc = -desiredAcc
 
-   massMat[0,0] = m1*lc1**2 + m2*(l1**2+l2**2+2*l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
+   massMat[0,0] = m1*l1**2 + m2*(l1**2+l2**2+2*l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
    massMat[0,1] = m2*(l2**2+l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
    massMat[1,0] = m2*(l2**2+l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
    massMat[1,1] = m2*l2**2
@@ -143,7 +140,7 @@ while(True):
       while(True):
          delay(0.001)
 
-         massMat[0,0] = m1*lc1**2 + m2*(l1**2+l2**2+2*l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
+         massMat[0,0] = m1*l1**2 + m2*(l1**2+l2**2+2*l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
          massMat[0,1] = m2*(l2**2+l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
          massMat[1,0] = m2*(l2**2+l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
          massMat[1,1] = m2*l2**2

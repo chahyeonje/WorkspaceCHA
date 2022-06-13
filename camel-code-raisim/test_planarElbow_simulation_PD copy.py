@@ -17,10 +17,10 @@ server = raisim.RaisimServer(world)
 ground = world.addGround()
 
 # load robot.urdf file
-planarElbow_urdf_file = os.path.dirname(os.path.abspath(__file__)) + "/rsc/test_planar_elbow_2dof_point_mass.urdf"
+planarElbow_urdf_file = os.path.dirname(os.path.abspath(__file__)) + "/rsc/test_planar_elbow_2dof.urdf"
 planarElbow = world.addArticulatedSystem(planarElbow_urdf_file)   # robot class
 planarElbow.setName("planarElbow")
-planarElbow.setGeneralizedCoordinate(np.array([0, 0]))
+planarElbow.setGeneralizedCoordinate(np.array([math.pi/6, math.pi/6]))
 
 # lauch server
 server.launchServer(8080)
@@ -40,8 +40,7 @@ q2_traj = ThirdOrderPolynomialTrajectory1D()
 q2_traj.updateTrajectory(currentPosition=0,goalPosition=0,currentTime=0,timeDuration=1)
 ###
 
-obj = world.addCylinder(0.2, 0.3, 9999)
-obj.setPosition(0.0, 0.4, 0.2)
+
 
 time.sleep(2)
 #integrate() = integrate1() + integrate2()
@@ -63,15 +62,6 @@ while(True):
     desiredPosition[1] = q2_traj.getPostionTrajectory(world.getWorldTime())
     desiredVelocity[0] = q1_traj.getVelocityTrajectory(world.getWorldTime())
     desiredVelocity[1] = q2_traj.getVelocityTrajectory(world.getWorldTime())
-    if world.getWorldTime() > 1:
-      desiredPosition[0] = math.pi/2
-      desiredPosition[1] = 0
-      desiredVelocity = np.array([0.0,0.0])
-      desiredAcc = np.array([0.0, 0.0])
-
-    tempTorque = Kp * (desiredPosition - position) + Kd * (desiredVelocity - velocity)
-    torque[0] = tempTorque[0]
-    torque[1] = 0*tempTorque[1]
-    planarElbow.setGeneralizedForce(torque)
+    
     world.integrate()
 
