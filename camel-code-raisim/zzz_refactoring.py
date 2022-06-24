@@ -60,9 +60,6 @@ q1_traj.updateTrajectory(currentPosition=0,goalPosition=math.pi/2,currentTime=0,
 q2_traj = ThirdOrderPolynomialTrajectory1D()
 q2_traj.updateTrajectory(currentPosition=0.0,goalPosition=0.0,currentTime=0,timeDuration=1)
 
-
-
-
 q=np.zeros(2)
 dq=np.zeros(2)
 obj = world.addCylinder(0.2, 0.3, 9999999)
@@ -70,6 +67,7 @@ obj.setPosition(0.0, 0.4, 0.2)
 
 s_traj = Sinusoidal()
 s_traj.updateTrajectory(currentPosition=planarElbow.getGeneralizedCoordinate()[0] ,goalPosition=math.pi/2,currentTime=world.getWorldTime(),timeDuration=1)
+
 residualVector = np.zeros(2)
 desiredMomenta = np.zeros(2)
 currentMomenta = np.zeros(2)
@@ -77,8 +75,6 @@ magnitudeResidualVector = np.linalg.norm(residualVector)
 T_collsion = np.zeros(2)
 s_collsion = 0
 colMassMat = np.zeros((2,2))
-#diag_K = np.array([[47,0],[0,36.5]])
-#diag_K = np.array([[19,0],[0,11]]) length 0.19
 diag_K = np.array([[38,0],[0,23]])
 
 

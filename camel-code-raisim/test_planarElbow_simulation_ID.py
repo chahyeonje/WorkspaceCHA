@@ -26,7 +26,7 @@ server = raisim.RaisimServer(world)
 ground = world.addGround()
 
 # load robot.urdf file
-planarElbow_urdf_file = os.path.dirname(os.path.abspath(__file__)) + "/rsc/test_planar_elbow_2dof.urdf"
+planarElbow_urdf_file = os.path.dirname(os.path.abspath(__file__)) + "/rsc/test_planar_elbow_2dof_point_mass.urdf"
 planarElbow = world.addArticulatedSystem(planarElbow_urdf_file)   # robot class
 
 planarElbow.setName("planarElbow")
@@ -40,10 +40,7 @@ m1=0.193
 m2=0.073
 l1=0.1492
 l2=0.381
-I1=0.0015
-I2=0.0001949
-lc1=0.1032
-lc2=0.084
+
 
 q1=planarElbow.getGeneralizedCoordinate()[0]
 q2=planarElbow.getGeneralizedCoordinate()[1]
@@ -51,7 +48,7 @@ dq1=planarElbow.getGeneralizedVelocity()[0]
 dq2=planarElbow.getGeneralizedVelocity()[1]
 
 massMat = np.ones((2,2))
-massMat[0,0] = m1*lc1**2 + m2*(l1**2+l2**2+2*l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
+massMat[0,0] = m1*l1**2 + m2*(l1**2+l2**2+2*l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
 massMat[0,1] = m2*(l2**2+l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
 massMat[1,0] = m2*(l2**2+l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
 massMat[1,1] = m2*l2**2
@@ -79,7 +76,7 @@ residualVector = np.zeros(2)
 desiredMomenta = np.zeros(2)
 currentMomenta = np.zeros(2)
 magnitudeResidualVector = np.linalg.norm(residualVector)
-diag_K = np.array([[50,0],[0,37]])
+diag_K = np.array([[38,0],[0,22]])
 T_collsion = np.zeros(2)
 s_collsion = 0
 colMassMat = np.zeros((2,2))
@@ -91,7 +88,11 @@ dq=np.zeros(2)
 obj = world.addCylinder(0.2, 0.3, 9999999)
 obj.setPosition(0.0, 0.4, 0.2)
 
+def Sd_t(time):
+   return 0.2*math.sin(0.2*math.pi*time)
 
+def Sd_t_prime(time):
+   return 0.04*math.pi*math.cos(0.2*math.pi*time)
 
 time.sleep(2)
 world.integrate()
@@ -108,11 +109,12 @@ while(True):
    desiredAcc[0] = q1_traj.getAccelerationTrajectory(world.getWorldTime())
    desiredAcc[1] = q2_traj.getAccelerationTrajectory(world.getWorldTime())
 
-   if world.getWorldTime() > 1:
-      desiredVelocity = -desiredVelocity
-      desiredAcc = -desiredAcc
+   if world.getWorldTime() >= 1:
+      desiredPosition = np.array([math.pi/2,0])
+      desiredVelocity = np.array([0,0])
+      desiredAcc = np.array([0,0])
 
-   massMat[0,0] = m1*lc1**2 + m2*(l1**2+l2**2+2*l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
+   massMat[0,0] = m1*l1**2 + m2*(l1**2+l2**2+2*l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
    massMat[0,1] = m2*(l2**2+l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
    massMat[1,0] = m2*(l2**2+l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
    massMat[1,1] = m2*l2**2
@@ -135,74 +137,69 @@ while(True):
    colMassMat[1,1] = -residualVector[1]
    ###
 
-   temptorque = np.dot(massMat,desiredAcc + 10*(desiredPosition-planarElbow.getGeneralizedCoordinate()) + 20*(desiredVelocity-planarElbow.getGeneralizedVelocity())) + coriolisMat
-   torque[0] = temptorque[0]*15.0
-   torque[1] = temptorque[1]*13.0
+   temptorque = np.dot(massMat,desiredAcc) + coriolisMat
+   torque[0] = temptorque[0]
+   torque[1] = temptorque[1]
+   integ_s = 0
+   integ_f = 0
 
-   if(magnitudeResidualVector > 2):
-      while(True):
-         delay(0.001)
+   
 
-         massMat[0,0] = m1*lc1**2 + m2*(l1**2+l2**2+2*l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
-         massMat[0,1] = m2*(l2**2+l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
-         massMat[1,0] = m2*(l2**2+l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
-         massMat[1,1] = m2*l2**2
+   # if(magnitudeResidualVector > 2):
+   #    s_traj.updateTrajectory(currentPosition=q1 ,goalPosition=math.pi/2,currentTime=world.getWorldTime(),timeDuration=1)
+   #    while(True):
+   #       delay(0.001)
 
-         h = -m2*l1*l2*math.sin(planarElbow.getGeneralizedCoordinate()[1])
-         coriolisMat[0] = -m2*l1*l2*math.sin(2*dq1*dq2+dq2**2)
-         coriolisMat[1] = m2*l1*l2*(dq1**2)*math.sin(q2)
+   #       massMat[0,0] = m1*l1**2 + m2*(l1**2+l2**2+2*l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
+   #       massMat[0,1] = m2*(l2**2+l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
+   #       massMat[1,0] = m2*(l2**2+l1*l2*math.cos(planarElbow.getGeneralizedCoordinate()[1]))
+   #       massMat[1,1] = m2*l2**2
 
-         desiredMomenta = np.dot(massMat,desiredVelocity)
+   #       h = -m2*l1*l2*math.sin(planarElbow.getGeneralizedCoordinate()[1])
+   #       coriolisMat[0] = -m2*l1*l2*math.sin(2*dq1*dq2+dq2**2)
+   #       coriolisMat[1] = m2*l1*l2*(dq1**2)*math.sin(q2)
+
+   #       desiredMomenta = np.dot(massMat,desiredVelocity)
          
 
-         magnitudeResidualVector = np.linalg.norm(residualVector)
-         T_collision = np.array([residualVector[1]/magnitudeResidualVector,-residualVector[0]/magnitudeResidualVector])
-         s_collision = np.dot(T_collsion,planarElbow.getGeneralizedVelocity())
-         us = s_traj.getAccelerationTrajectory(world.getWorldTime()) + 2*(s_traj.getVelocityTrajectory(world.getWorldTime()) - s_collision)
-         uf = 0.1 + (0.01 - 1)*(0.01 - magnitudeResidualVector)
-         colMassMat[0,0] = np.dot(massMat,T_collision)[0]
-         colMassMat[1,0] = np.dot(massMat,T_collision)[1]
-         colMassMat[0,1] = -residualVector[0]
-         colMassMat[1,1] = -residualVector[1]
+   #       magnitudeResidualVector = np.linalg.norm(residualVector)
+   #       T_collision = np.array([residualVector[1]/magnitudeResidualVector,-residualVector[0]/magnitudeResidualVector])
+   #       s_collision = np.dot(T_collsion,planarElbow.getGeneralizedVelocity())
+   #       integ_s = integ_s + s_traj.getVelocityTrajectory(world.getWorldTime()) - s_collision
+         
+   #       us = Sd_t_prime(world.getWorldTime()) + 2*(Sd_t(world.getWorldTime()) - s_collision) + integ_s
+   #       uf = 0.1 + (0.01 - 1)*(0.01 - magnitudeResidualVector)
 
-         temptorque = np.dot(colMassMat,[us,uf])+ coriolisMat
-         torque[0] = temptorque[0]
-         torque[1] = temptorque[1]
+   #       colMassMat[0,0] = np.dot(massMat,T_collision)[0]
+   #       colMassMat[1,0] = np.dot(massMat,T_collision)[1]
+   #       colMassMat[0,1] = -residualVector[0]
+   #       colMassMat[1,1] = -residualVector[1]
 
-         # position = planarElbow.getGeneralizedCoordinate()
-         # velocity = planarElbow.getGeneralizedVelocity()
-         # desiredPosition[0] = math.pi/2#q1_traj.getPostionTrajectory(world.getWorldTime())
-         # desiredPosition[1] = 0 #q2_traj.getPostionTrajectory(world.getWorldTime())
-         # desiredVelocity[0] = 0 #q1_traj.getVelocityTrajectory(world.getWorldTime())
-         # desiredVelocity[1] = 0 #q2_traj.getVelocityTrajectory(world.getWorldTime())
-         # tempTorque = 100 * (desiredPosition - position) + 10 * (desiredVelocity - velocity)
-         # torque[0] = tempTorque[0]
-         # torque[1] = 0.1*tempTorque[1]
+   #       temptorque = np.dot(colMassMat,[us,uf])+ coriolisMat
+   #       torque[0] = temptorque[0]
+   #       torque[1] = temptorque[1]
 
+   #       planarElbow.setGeneralizedForce(torque)
+   #       currentMomenta = np.dot(massMat,planarElbow.getGeneralizedVelocity())
+   #       residualVector = np.dot(diag_K,currentMomenta - desiredMomenta)
+   #       #magnitudeResidualVector = np.linalg.norm(residualVector)
 
-         planarElbow.setGeneralizedForce(torque)
-         currentMomenta = np.dot(massMat,planarElbow.getGeneralizedVelocity())
-         residualVector = np.dot(diag_K,currentMomenta - desiredMomenta)
-         #magnitudeResidualVector = np.linalg.norm(residualVector)
+   #       num1 = world.getWorldTime() * 1000
+   #       int_a = int(num1)
+   #       if(int_a%100==0):
+   #          print("col=>","currneMomenta : ",currentMomenta," desiredMomenta : ",desiredMomenta ," residualVector : ",residualVector," magnitude : ",magnitudeResidualVector,"\n")
 
-         num1 = world.getWorldTime() * 1000
-         int_a = int(num1)
-         if(int_a%100==0):
-            print("col=>","currneMomenta : ",currentMomenta," desiredMomenta : ",desiredMomenta ," residualVector : ",residualVector," magnitude : ",magnitudeResidualVector,"\n")
-
-         world.integrate()
+   #       world.integrate()
 
    planarElbow.setGeneralizedForce(torque)
    currentMomenta = np.dot(massMat,planarElbow.getGeneralizedVelocity())
    residualVector = np.dot(diag_K,currentMomenta - desiredMomenta)
    # magnitudeResidualVector = np.linalg.norm(residualVector)
 
-   num1 = world.getWorldTime() * 100
-   int_a = int(num1)
-   if(int_a%10==0):
-      print(temptorque[0]," ",temptorque[1],"\n")   
-      print(residualVector, "\n")
-      print("currneMomenta : ",currentMomenta," desiredMomenta : ",desiredMomenta ," residualVector : ",residualVector," magnitude : ",magnitudeResidualVector,"\n")
+   # num1 = world.getWorldTime() * 100
+   # int_a = int(num1)
+   # if(int_a%10==0):
+   print("currneMomenta : ",currentMomenta," desiredMomenta : ",desiredMomenta ," residualVector : ",residualVector," magnitude : ",magnitudeResidualVector,"\n")
 
    world.integrate()
 
