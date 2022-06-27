@@ -8,8 +8,8 @@ import raisimpy as raisim
 import time
 raisim.World.setLicenseFile(os.path.dirname(os.path.abspath(__file__)) + "/../../rsc/activation.raisim")
 from CAMELTrajectoryGenerator import ThirdOrderPolynomialTrajectory1D
-### basic lines for initializing raisim
-from CAMELRaisimLib import Simulation
+# ### basic lines for initializing raisim
+# from CAMELRaisimLib import Simulation
 # make raisim world
 world = raisim.World()
 world.setTimeStep(0.001)

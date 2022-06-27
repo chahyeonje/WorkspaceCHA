@@ -8,3 +8,6 @@
 	git commit -m "Add"
 	git push origin CHA 
 
+
+<명령어 정리>
+	git status			//현재 상태 확인
