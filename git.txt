@@ -11,3 +11,4 @@
 
 <명령어 정리>
 	git status			//현재 상태 확인
+	git checkout <branch name>	//브랜치 전환
