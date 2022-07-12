@@ -8,7 +8,7 @@ import sys
 sys.path.append(pathOS.pathos) # path to the raisimpy
 import raisimpy as raisim
 import time
-from z_refectoring_class import twoDofArm
+from CollsitionDetection_2dofArm import twoDofArm
 from CAMELTrajectoryGenerator import Sinusoidal, ThirdOrderPolynomialTrajectory1D
 raisim.World.setLicenseFile(os.path.dirname(os.path.abspath(__file__)) + "/../../rsc/activation.raisim")
 ### basic lines for initializing raisim
