@@ -20,15 +20,12 @@ class Gps:
             self.timestamp = str(self.msg.timestamp)[0:8]
             self.lat = self.msg.latitude 
             self.lng = self.msg.longitude
+            return self.timestamp, self.lat, self.lng
 
         else :
-            time.sleep(1)
-            self.data = self.ser.readline()
-            self.msg = self.msg = pynmea2.parse(str(self.data, 'utf-8'))
-            self.timestamp = str(self.msg.timestamp)[0:8]
-            self.lat = self.msg.latitude 
-            self.lng = self.msg.longitude
-        return self.lat, self.lng
+            pass
+
+        
 
     def startGpsPosition(self, latitude, longitude):
         self.startLat, self.startLng = latitude,longitude 
