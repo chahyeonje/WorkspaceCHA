@@ -10,12 +10,8 @@ print("북쪽으로 남은 거리 : ", distanceN, "동쪽으로 남은 거리 : 
 
 while True:
     try:
-        lat, lng = testGps.getGps()
-        testGps.currentGpsPosition(lat,lng)
-        distanceN, distanceE = testGps.getDistanceCurrentToGoal()
-        print("북쪽으로 남은 거리 : ", distanceN, "동쪽으로 남은 거리 : ", distanceE)
-        print("현재 위치: ",lat,lng)
-        print(" ")
+        testGps.showState()
+        testGps.recordOutput('0725')
     except:
         continue
 

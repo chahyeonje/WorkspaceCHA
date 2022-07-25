@@ -45,3 +45,11 @@ class Gps:
         self.distanceToNorth = (self.goalLat - self.currentLat)*100000*1.08
         self.distanceToEast = (self.goalLng - self.currentLng)*100000*0.98
         return self.distanceToNorth, self.distanceToEast
+
+    def showState(self):
+        lat, lng = self.getGps()
+        self.currentGpsPosition(lat,lng)
+        distanceN, distanceE = self.getDistanceCurrentToGoal()
+        print("북쪽으로 남은 거리 : ", distanceN, "동쪽으로 남은 거리 : ", distanceE)
+        print("현재 위치: ",lat,lng)
+        print(" ")
