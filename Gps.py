@@ -20,7 +20,7 @@ class Gps:
             self.timestamp = str(self.msg.timestamp)[0:8]
             self.lat = self.msg.latitude 
             self.lng = self.msg.longitude
-            return self.timestamp, self.lat, self.lng
+            return  self.lat, self.lng
 
         else :
             pass
