@@ -1,12 +1,16 @@
+from operator import truediv
 import serial
 import string
 import pynmea2
 import time
 class Gps:
     def __init__(self):
-        self.port = '/dev/ttyUSB0'
+        self.port = '/dev/ttyUSB2'
         self.ser = serial.Serial(self.port, baudrate=9600)
+        self.data = 'nop'
         self.firstRun = True
+        self.prevLat = 0
+        self.prevLng = 0
         
     def recordOutput(self,title):
         f = open(title,'a')
@@ -15,20 +19,23 @@ class Gps:
         f.close()
 
     def getGps(self):
-        self.data = self.ser.readline()
-        if str(self.data[0:6], 'utf-8')=="$GNGGA" :
-            self.msg = pynmea2.parse(str(self.data, 'utf-8'))
-            self.timestamp = str(self.msg.timestamp)[0:8]
-            self.lat = self.msg.latitude 
-            self.lng = self.msg.longitude
-            return  self.lat, self.lng
-
-        else :
-            pass
+        time.sleep(1)
+        while(True):
+            self.data = self.ser.readline()
+            if str(self.data[0:6], 'utf-8')=="$GNGGA" :
+                self.msg = pynmea2.parse(str(self.data, 'utf-8'))
+                self.timestamp = str(self.msg.timestamp)[0:8]
+                self.lat = self.msg.latitude 
+                self.lng = self.msg.longitude
+                break
+            else :
+                pass
+        
+        return  self.lat, self.lng
 
     def setupGps(self, goallat, goallng):
-        lat, lng = self.getGps()
-        self.startGpsPosition(lat, lng)
+        lat, lng = self.getGps() # 시작 좌표를 gps에서 받아옴
+        self.startGpsPosition(lat, lng) # 시작 좌표를 강제로 설정하려면 lat,lng 자리에 값 대입
         self.goalGpsPosition(goallat, goallng)
 
     def startGpsPosition(self, latitude, longitude):
@@ -36,16 +43,17 @@ class Gps:
 
     def currentGpsPosition(self):
         self.latIn, self.lngIn = self.getGps()
+        # self.currentLat, self.currentLng = self.getGps()
         if(self.firstRun == True):
-            prevLat = self.startLat
-            prevLng = self.startLng
+            self.prevLat = self.startLat
+            self.prevLng = self.startLng
             self.firstRun = False
         else : 
             pass
         
         if(self.latIn == 0):
-            self.currentLat = prevLat
-            self.currentLng = prevLng
+            self.currentLat = self.prevLat
+            self.currentLng = self.prevLng
         else:
             self.currentLat = self.latIn
             self.currentLng = self.lngIn
