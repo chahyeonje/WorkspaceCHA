@@ -3,9 +3,10 @@ import serial
 import string
 import pynmea2
 import time
+#sudo chmod 666 /dev/ttyUSB0 permision denied.
 class Gps:
     def __init__(self):
-        self.port = '/dev/ttyUSB2'
+        self.port = '/dev/ttyUSB0'
         self.ser = serial.Serial(self.port, baudrate=9600)
         self.data = 'nop'
         self.firstRun = True
@@ -43,7 +44,7 @@ class Gps:
 
     def currentGpsPosition(self):
         self.latIn, self.lngIn = self.getGps()
-        # self.currentLat, self.currentLng = self.getGps()
+        
         if(self.firstRun == True):
             self.prevLat = self.startLat
             self.prevLng = self.startLng
@@ -57,8 +58,8 @@ class Gps:
         else:
             self.currentLat = self.latIn
             self.currentLng = self.lngIn
-            prevLat = self.latIn
-            prevLng = self.lngIn
+            self.prevLat = self.latIn
+            self.prevLng = self.lngIn
         
         return self.currentLat, self.currentLng
 
